@@ -1,3 +1,9 @@
 /.venv/
 **/*.zip
 **/.ipynb_checkpoints
+
+# compile dirs
+**/.cache/
+**/obj/
+**/*.a
+**/compile_commands.json
