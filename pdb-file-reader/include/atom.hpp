@@ -16,3 +16,5 @@ std::vector<Atom> read_pdb(const std::string &file);
 std::vector<Atom> filter_atoms(const std::vector<Atom>& atoms, std::function<bool(Atom)>);
 
 std::string remove_whitespace(const std::string& str);
+
+void write_to_file(const std::vector<Atom>& atoms);
