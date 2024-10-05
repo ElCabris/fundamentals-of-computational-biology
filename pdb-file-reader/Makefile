@@ -38,9 +38,10 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 $(OBJ_DIR) $(LIB_DIR) $(TEST_BIN_DIR):
 	mkdir -p $@
 
-# Targets para Pruebas
-tests: $(TEST_BINS)
+# Target para Compilar las Pruebas
+tests: $(TEST_BIN_DIR) $(TEST_BINS)
 
+# Compilar y Enlazar Cada Prueba con la Librería Estática
 $(TEST_BIN_DIR)/%: $(TEST_DIR)/%.cpp $(LIB_DIR)/$(LIB_NAME) | $(TEST_BIN_DIR)
 	@echo "Compilando prueba $<..."
 	$(CXX) $(CXXFLAGS) $< -L$(LIB_DIR) -latom -o $@
