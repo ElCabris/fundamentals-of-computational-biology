@@ -1,6 +1,6 @@
+#include <functional>
 #include <string>
 #include <vector>
-#include <functional>
 
 struct Atom {
   int serial_number, residue_sequence_number;
@@ -13,8 +13,11 @@ struct Atom {
 
 std::vector<Atom> read_pdb(const std::string &file);
 
-std::vector<Atom> filter_atoms(const std::vector<Atom>& atoms, std::function<bool(Atom)>);
+std::vector<Atom> filter_atoms(const std::vector<Atom> &atoms,
+                               std::function<bool(Atom)>);
 
-std::string remove_whitespace(const std::string& str);
+std::string remove_whitespace(const std::string &str);
 
-void write_to_file(const std::vector<Atom>& atoms);
+void write_to_file(const std::vector<Atom> &atoms, const std::string& file_name);
+
+float calculate_distance(const Atom &atom1, const Atom &atom2);

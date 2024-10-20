@@ -1,97 +1,86 @@
 #include <atom.hpp>
 #include <fstream>
+#include <iomanip>
 #include <string>
+#include <vector>
 
 enum Alignment {
-	RIGHT,
-	LEFT,
+    RIGHT,
+    LEFT,
 };
 
-int calcule_blank_spaces(const std::string& string, int available_space) {
-	return available_space - string.size();
+std::string format_field(const std::string& data, int width, Alignment alignment) {
+    std::ostringstream oss;
+    if (alignment == RIGHT) {
+        oss << std::right << std::setw(width) << data;
+    } else {
+        oss << std::left << std::setw(width) << data;
+    }
+    return oss.str();
 }
-
-std::string add_blank_spaces(int blank_spaces) {
-	std::string result = "";
-	for (auto i = 0; i < blank_spaces; ++i) {
-		result += ' ';
-	}
-	return result;
-}
-
-std::string align(const std::string& data, int blank_spaces, Alignment alignment) {
-	std::string result = "";
-	if (alignment == RIGHT) {
-		add_blank_spaces(blank_spaces);
-		result += data;
-	}
-
-	else if (alignment == LEFT) {
-		result += data;
-		add_blank_spaces(blank_spaces);
-	}
-
-	return result;
-}
-
 
 void write_to_file(const std::vector<Atom>& atoms, const std::string& file_name) {
-	std::ofstream file(file_name);
+    std::ofstream file(file_name);
+    if (!file.is_open()) {
+        throw std::runtime_error("No se pudo abrir el archivo para escritura.");
+    }
 
-	for (auto atom : atoms) {
-		file << "ATOM  ";
-		// atom serial number
-		auto aux = std::to_string(atom.serial_number); 
-		file << align(aux, calcule_blank_spaces(aux, 5), RIGHT);
-		
-		// atom name
-		file << align(atom.name, calcule_blank_spaces(atom.name, 4), LEFT);
-		
-		// Alternate location indicator
-		file << atom.alternate_location_indicator;
+    for (const auto& atom : atoms) {
+        std::ostringstream line;
 
-		// Residue name
-		file << align(atom.residue_name, calcule_blank_spaces(atom.residue_name, 3), RIGHT);
+        // Record name
+        line << "ATOM  ";
 
-		// Chain identifier
-		file << atom.chain_identifier;
+        // Atom serial number (columns 7-11)
+        line << format_field(std::to_string(atom.serial_number), 5, RIGHT) << " ";
 
-		// Residue sequence number
-		aux = std::to_string(atom.residue_sequence_number);
-		file << align(aux, calcule_blank_spaces(aux, 4), RIGHT);
+        // Atom name (columns 13-16)
+        line << format_field(atom.name, 4, LEFT);
 
-		// Code for insertions of residues
-		file << atom.code_for_insertions_of_residues;
+        // Alternate location indicator (column 17)
+        line << atom.alternate_location_indicator;
 
-		// X orthogonal A coordinate
-		aux = std::to_string(atom.x_ortogonal_coordinate);
-		file << align(aux, calcule_blank_spaces(aux, 8), RIGHT);
+        // Residue name (columns 18-20)
+        line << " " << format_field(atom.residue_name, 3, RIGHT) << " ";
 
-		// Y orthogonal A coordinate
-		aux = std::to_string(atom.y_ortogonal_coordinate);
-		file << align(aux, calcule_blank_spaces(aux, 8), RIGHT);
+        // Chain identifier (column 22)
+        line << atom.chain_identifier << " ";
 
-		// Z orthogonal A coordinate
-		aux = std::to_string(atom.z_ortogonal_coordinate);
-		file << align(aux, calcule_blank_spaces(aux, 8), RIGHT);
+        // Residue sequence number (columns 23-26)
+        line << format_field(std::to_string(atom.residue_sequence_number), 4, RIGHT);
 
-		// occupancy
-		aux = std::to_string(atom.occupancy);
-		file << align(aux, calcule_blank_spaces(aux, 6), RIGHT);
+        // Code for insertions of residues (column 27)
+        line << " ";
 
-		// Temperature factor
-		aux = std::to_string(atom.temperature_factor);
-		file << align(aux, calcule_blank_spaces(aux, 6), RIGHT);
+        // X coordinate (columns 31-38)
+        line << std::fixed << std::setw(8) << std::right << std::setprecision(3) << atom.x_ortogonal_coordinate;
 
-		// Segment identifier
-		file << align(atom.segment_identifier, calcule_blank_spaces(atom.segment_identifier, 4), LEFT);
+        // Y coordinate (columns 39-46)
+        line << std::fixed << std::setw(8) << std::right << std::setprecision(3) << atom.y_ortogonal_coordinate;
 
-		// Element symbol
-		file << align(atom.element_symbol, calcule_blank_spaces(atom.element_symbol, 2), RIGHT);
-		
-		// Charge
-		file << atom.charge;
+        // Z coordinate (columns 47-54)
+        line << std::fixed << std::setw(8) << std::right << std::setprecision(3) << atom.z_ortogonal_coordinate;
 
-		file << '\n';
-	}
+        // Occupancy (columns 55-60)
+        line << std::fixed << std::setw(6) << std::right << std::setprecision(2) << atom.occupancy;
+
+        // Temperature factor (columns 61-66)
+        line << std::fixed << std::setw(6) << std::right << std::setprecision(2) << atom.temperature_factor;
+
+        // Segment identifier (columns 73-76)
+        // Rellenar con espacios si es necesario
+        line << "   " << format_field(atom.segment_identifier, 4, LEFT);
+
+        // Element symbol (columns 77-78)
+        line << format_field(atom.element_symbol, 2, RIGHT);
+
+        // Charge (columns 79-80)
+        line << format_field(atom.charge, 2, RIGHT);
+
+        // Añadir la línea al archivo
+        file << line.str() << "\n";
+    }
+
+    file.close();
 }
+
