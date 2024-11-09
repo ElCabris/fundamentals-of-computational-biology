@@ -1,6 +1,6 @@
 # Variables del Compilador y Flags
 CXX = g++
-CXXFLAGS = -Wall -Iinclude -std=c++17
+CXXFLAGS = -Wall -Iinclude -std=c++20 -g
 LDFLAGS = 
 
 # Directorios
