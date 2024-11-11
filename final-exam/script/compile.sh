@@ -1,4 +1,4 @@
 #!/bin/bash
-echo "compiling program"
-g++ src/main.cpp -Iinclude -Llibs -latom -o atoms -std=c++20
-echo "compilation completed successfully, to run type ./atoms <ligand> <protein> <output>"
+echo "compiling programs"
+g++ src/filter_ligand.cpp -Iinclude -Llibs -latom -o filter_ligand -std=c++20 -g
+echo "compilation completed successfully"
