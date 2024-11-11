@@ -1,7 +1,13 @@
 #include <atom.hpp>
 #include <cassert>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+
+std::string get_filename_without_extension(const std::string &path) {
+  std::filesystem::path file_path(path);
+  return file_path.stem().string();
+}
 
 int main(int argc, char *argv[]) {
 
@@ -51,14 +57,20 @@ int main(int argc, char *argv[]) {
 
     // buscar cada ligando
     for (const auto &i : ligand_filter) {
-      assert(minimum_distance(protein_filtered, i) < 3.5);
-      file << argv[2] << ',' << i.name << ',';
+      auto dis_min = minimum_distance(protein_filtered, i);
+      assert(dis_min < 3.5);
+
+      file << get_filename_without_extension(argv[2]) << ',' << i.name << ',';
       // buscar cada proteina
+
       for (const auto &j : protein_filtered) {
-        file << j.name << ',' << j.residue_name << ','
-             << j.residue_sequence_number << ',';
+        if (calculate_distance(j, i) == dis_min) {
+          file << j.name << ',' << j.residue_name << ','
+               << j.residue_sequence_number << ',';
+          break;
+        }
       }
-      file << minimum_distance(protein_filtered, i) << '\n';
+      file << dis_min << '\n';
     }
 
     file.close();

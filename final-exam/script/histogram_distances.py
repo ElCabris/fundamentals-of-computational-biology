@@ -11,5 +11,5 @@ plt.xlabel('Distancias')
 plt.ylabel('Frecuencia')
 plt.title('Histograma de Distancias')
 
-plt.savefig("histograma.jpg", format="jpg")
+plt.savefig("histograma_distances.jpg", format="jpg")
 
